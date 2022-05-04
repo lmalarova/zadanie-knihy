@@ -55,7 +55,7 @@ public class BookController {
     }
 
     @GetMapping(value = "/{id}/lendCount", produces = MediaType.APPLICATION_JSON_VALUE)
-    public LendCount getLendCount(@PathVariable("id") Long bookId) throws NotFoundException {
-        return new LendCount(this.service.getLendCount(bookId));
+    public Amount getLendCount(@PathVariable("id") Long bookId) throws NotFoundException {
+        return new Amount(this.service.getLendCount(bookId));
     }
 }
