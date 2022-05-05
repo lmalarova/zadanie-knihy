@@ -23,7 +23,5 @@ public interface IBookService {
 
     int addAmount(long id, int amountToAdd) throws NotFoundException;
 
-    void changeAmount(long id, int amount) throws NotFoundException, IllegalOperationException;
-
     int getLendCount(long id) throws NotFoundException;
 }

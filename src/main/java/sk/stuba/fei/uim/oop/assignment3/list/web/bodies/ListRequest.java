@@ -6,10 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ListRequest {
-
-    private long bookId;
-
-    public ListRequest(long bookId) {
-        this.bookId = bookId;
-    }
+    private long id;
 }

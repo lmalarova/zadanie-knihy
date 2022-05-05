@@ -32,57 +32,57 @@ public class ListService implements IListService {
     @Override
     public List getById(long id) throws NotFoundException {
         List list = this.listRepository.findLendingListById(id);
-        if (list == null) {
+        if(list == null){
             throw new NotFoundException();
         }
         return list;
     }
 
     @Override
-    public void delete(long id) throws NotFoundException {
-        this.listRepository.delete(this.getById(id));
+    public void delete(long id) throws NotFoundException, IllegalOperationException {
+        List list = this.getById(id);
+        java.util.List<Book> books =list.getLendingList();
+        this.bookService.changeLendCount(books, -1);
+        this.listRepository.delete(list);
     }
 
     @Override
     public List addToList(long listId, ListRequest data) throws NotFoundException, IllegalOperationException {
-        List list = this.getUnlended(listId);
-        Book book = this.bookService.getById(data.getBookId());
-        // this.bookService.changeAmount(data.getBookId(), 1);
-        this.listRepository.findLendingListById(listId).getLendingList().add(book);
+        List list = this.getById(listId);
+        Book book = this.bookService.getById(data.getId());
+        this.checkIfLended(list);
+        this.checkIfBookInList(book, list);
+        list.getLendingList().add(book);
         return this.listRepository.save(list);
     }
 
     @Override
     public void removeFromList(long listId, ListRequest data) throws NotFoundException, IllegalOperationException {
-        List list = this.getUnlended(listId);
-        Book book = this.bookService.getById(data.getBookId());
-        // this.bookService.changeAmount(data.getBookId(), -1);
+        List list = this.getById(listId);
+        this.checkIfLended(list);
+        Book book = this.bookService.getById(data.getId());
         list.getLendingList().remove(book);
     }
 
     @Override
     public void lendLendingList(long listId) throws NotFoundException, IllegalOperationException {
-        List list = this.getUnlended(listId);
-        list.setLended(true);
+        List list = this.getById(listId);
+        this.checkIfLended(list);
         this.lendBooks(list.getLendingList());
+        list.setLended(true);
     }
 
-    private List getUnlended(long id) throws NotFoundException, IllegalOperationException {
-        List list = this.getById(id);
-        if(list.isLended()) {
+    private void checkIfLended(List list) throws IllegalOperationException {
+        if(list.isLended()){
             throw new IllegalOperationException();
         }
-        return list;
     }
 
-//    private sk.stuba.fei.uim.oop.assignment3.list.data.ListEntry findListEntryWittBook(List<sk.stuba.fei.uim.oop.assignment3.list.data.ListEntry> entries, long bookId) {
-//        for (var entry : entries) {
-//            if (entry.getBook().getId().equals(bookId)) {
-//                return entry;
-//            }
-//        }
-//        return null;
-//    }
+    private void checkIfBookInList(Book book, List list) throws IllegalOperationException {
+        if(list.getLendingList().contains(book)){
+            throw new IllegalOperationException();
+        }
+    }
 
     private void lendBooks(java.util.List<Book> books) throws IllegalOperationException {
         for(var book : books) {

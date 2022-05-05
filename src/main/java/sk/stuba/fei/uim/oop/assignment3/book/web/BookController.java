@@ -49,7 +49,7 @@ public class BookController {
         return new Amount(this.service.getAmount(bookId));
     }
 
-    @PutMapping(value = "/{id}/amount", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/{id}/amount", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
         public Amount addAmount(@PathVariable("id") Long bookId, @RequestBody Amount body) throws NotFoundException {
         return new Amount(this.service.addAmount(bookId, body.getAmount()));
     }

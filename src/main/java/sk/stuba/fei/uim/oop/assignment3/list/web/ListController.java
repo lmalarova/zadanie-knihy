@@ -21,14 +21,14 @@ public class ListController {
     @Autowired
     private IListService service;
 
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ListResponse> addList() {
+        return new ResponseEntity<>(new ListResponse(this.service.create()), HttpStatus.CREATED);
+    }
+
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ListResponse> getAllLists() {
         return this.service.getAll().stream().map(ListResponse::new).collect(Collectors.toList());
-    }
-
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ListResponse> addList() {
-        return new ResponseEntity<>(new ListResponse(this.service.create()), HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -37,12 +37,22 @@ public class ListController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public void delete(@PathVariable("id") long listId) throws NotFoundException {
+    public void delete(@PathVariable("id") long listId) throws NotFoundException, IllegalOperationException {
         this.service.delete(listId);
     }
 
     @PostMapping(value = "/{id}/add", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ListResponse addToCart(@PathVariable("id") Long listId, @RequestBody ListRequest listRequest) throws NotFoundException, IllegalOperationException {
+    public ListResponse addToList(@PathVariable("id") Long listId, @RequestBody ListRequest listRequest) throws NotFoundException, IllegalOperationException {
         return new ListResponse(this.service.addToList(listId, listRequest));
+    }
+
+    @DeleteMapping(value = "/{id}/remove", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void removeFromList(@PathVariable("id") Long listId, @RequestBody ListRequest listRequest) throws NotFoundException, IllegalOperationException {
+        this.service.removeFromList(listId, listRequest);
+    }
+
+    @GetMapping(value = "/{id}/lend")
+    public void lendList(@PathVariable("id") Long listId) throws NotFoundException, IllegalOperationException {
+        this.service.lendLendingList(listId);
     }
 }

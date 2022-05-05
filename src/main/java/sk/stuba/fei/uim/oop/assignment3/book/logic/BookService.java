@@ -35,7 +35,9 @@ public class BookService implements IBookService {
         if(author.getBooks() == null){
             author.setBooks(new ArrayList<>());
         }
+        this.bookRepository.save(newBook);
         author.getBooks().add(newBook);
+        this.authorRepository.save(author);
         return newBook;
     }
 
@@ -95,12 +97,13 @@ public class BookService implements IBookService {
         return this.getById(id).getLendCount();
     }
 
-    @Override
-    public void changeAmount(long id, int amount) throws NotFoundException, IllegalOperationException {
-        Book book = this.getById(id);
-        if(book.getAmount() == 0) {
-            throw new IllegalOperationException();
+    public void changeLendCount(List<Book> books, int amount) throws IllegalOperationException {
+        for(Book book : books) {
+            if(book.getLendCount() + amount < 0) {
+                throw new IllegalOperationException();
+            }else {
+                book.setLendCount(book.getLendCount() + amount);
+            }
         }
-        book.setAmount(book.getAmount() + amount);
     }
 }
