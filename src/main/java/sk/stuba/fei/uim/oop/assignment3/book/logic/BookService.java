@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sk.stuba.fei.uim.oop.assignment3.author.data.Author;
 import sk.stuba.fei.uim.oop.assignment3.author.data.AuthorRepository;
+import sk.stuba.fei.uim.oop.assignment3.author.logic.AuthorService;
 import sk.stuba.fei.uim.oop.assignment3.book.data.Book;
 import sk.stuba.fei.uim.oop.assignment3.book.data.BookRepository;
 import sk.stuba.fei.uim.oop.assignment3.book.web.bodies.BookRequest;
@@ -20,7 +21,7 @@ public class BookService implements IBookService {
     BookRepository bookRepository;
 
     @Autowired
-    AuthorRepository authorRepository;
+    AuthorService authorService;
 
     @Override
     public List<Book> getAll() {
@@ -28,8 +29,8 @@ public class BookService implements IBookService {
     }
 
     @Override
-    public Book create(BookRequest request) {
-        Author author = this.authorRepository.findAuthorById(request.getAuthor());
+    public Book create(BookRequest request) throws NotFoundException {
+        Author author = this.authorService.getById(request.getAuthor());
         Book newBook = this.bookRepository.save(new Book(request));
         newBook.setAuthor(author);
         if(author.getBooks() == null){
@@ -37,7 +38,7 @@ public class BookService implements IBookService {
         }
         this.bookRepository.save(newBook);
         author.getBooks().add(newBook);
-        this.authorRepository.save(author);
+        this.authorService.save(author);
         return newBook;
     }
 
@@ -60,7 +61,7 @@ public class BookService implements IBookService {
             book.setDescription(request.getDescription());
         }
         if(request.getAuthor() != 0){
-            Author author = this.authorRepository.findAuthorById(request.getAuthor());
+            Author author = this.authorService.getById(request.getAuthor());
             book.setAuthor(author);
         }
         if (request.getPages() != 0) {
@@ -105,5 +106,9 @@ public class BookService implements IBookService {
                 book.setLendCount(book.getLendCount() + amount);
             }
         }
+    }
+
+    public void deleteAll(List<Book> books) {
+        this.bookRepository.deleteAll(books);
     }
 }

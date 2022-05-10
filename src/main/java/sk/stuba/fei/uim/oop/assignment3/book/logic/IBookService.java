@@ -11,7 +11,7 @@ import java.util.List;
 public interface IBookService {
     List<Book> getAll();
 
-    Book create(BookRequest request);
+    Book create(BookRequest request) throws NotFoundException;
 
     Book getById(long id) throws NotFoundException;
 

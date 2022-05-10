@@ -6,7 +6,7 @@ import sk.stuba.fei.uim.oop.assignment3.author.data.Author;
 import sk.stuba.fei.uim.oop.assignment3.author.data.AuthorRepository;
 import sk.stuba.fei.uim.oop.assignment3.author.web.bodies.AuthorRequest;
 import sk.stuba.fei.uim.oop.assignment3.book.data.Book;
-import sk.stuba.fei.uim.oop.assignment3.book.data.BookRepository;
+import sk.stuba.fei.uim.oop.assignment3.book.logic.BookService;
 import sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public class AuthorService implements IAuthorService{
     private AuthorRepository authorRepository;
 
     @Autowired
-    private BookRepository bookRepository;
+    private BookService bookService;
 
     @Override
     public List<Author> getAll() {
@@ -53,10 +53,10 @@ public class AuthorService implements IAuthorService{
 
     @Override
     public void delete(long id) throws NotFoundException {
-        List<Book> books = this.getById(id).getBooks();
-        if(books != null){
-            this.bookRepository.deleteAll(books);
-        }
         this.authorRepository.delete(this.getById(id));
+    }
+
+    public void save(Author author) {
+        this.authorRepository.save(author);
     }
 }
