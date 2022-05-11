@@ -72,12 +72,12 @@ public class BookService implements IBookService {
 
     @Override
     public void delete(long id) throws NotFoundException {
-        Book book = this.bookRepository.findBookById(id);
+        Book book = this.getById(id);
         if(book != null){
             Author author = book.getAuthor();
             author.getBooks().remove(book);
         }
-        this.bookRepository.delete(this.getById(id));
+        this.bookRepository.delete(book);
     }
 
     @Override
