@@ -18,7 +18,7 @@ public class List {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany
+    @ManyToMany
     private java.util.List<Book> lendingList;
 
     private boolean lended;
